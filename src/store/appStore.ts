@@ -99,8 +99,8 @@ interface AppState {
   // UI state
   isSidebarOpen: boolean;
   isDrawerOpen: boolean;
-  activeTab: 'map' | 'chat' | 'leads' | 'workflows' | 'tasks' | 'sequences' | 'replies' | 'dashboard';
-  setActiveTab: (tab: 'map' | 'chat' | 'leads' | 'workflows' | 'tasks' | 'sequences' | 'replies' | 'dashboard') => void;
+  activeTab: 'chat' | 'meetings' | 'projects' | 'tasks' | 'dashboard';
+  setActiveTab: (tab: 'chat' | 'meetings' | 'projects' | 'tasks' | 'dashboard') => void;
 
   // A CSV import can be triggered from the Map view (not just the Prospect
   // tab) — this hands the resulting pool-company ids to the Prospect tab so
@@ -222,8 +222,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   isSidebarOpen: true,
   isDrawerOpen: false,
-  activeTab: 'map',
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  activeTab: 'dashboard',
+  setActiveTab: (tab) => set({ activeTab: tab as AppState['activeTab'] }),
   pendingPoolImport: null,
   setPendingPoolImport: (v) => set({ pendingPoolImport: v }),
 

@@ -9,7 +9,6 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import SharedRouteLanding from "./pages/SharedRouteLanding";
 import GetStarted from "./pages/GetStarted";
 
 const queryClient = new QueryClient();
@@ -30,14 +29,6 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/r/:code"
-              element={
-                <ProtectedRoute>
-                  <SharedRouteLanding />
                 </ProtectedRoute>
               }
             />

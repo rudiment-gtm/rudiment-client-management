@@ -111,17 +111,21 @@ const SUGGESTIONS = [
   'List accounts with no visit logged yet',
 ];
 
+// Workflows/Sequences/Map tabs were removed from the app — these three
+// build flows saved a draft and navigated to one of those tabs, which no
+// longer exist. Marked unwired so the entry cards fall back to the
+// "isn't wired up yet" message instead of ending on a blank screen.
 const BUILD_OPTIONS: { mode: BuildMode; label: string; icon: typeof Workflow; wired: boolean; kickoff: string }[] = [
   {
-    mode: 'workflow', label: 'Workflow', icon: Workflow, wired: true,
+    mode: 'workflow', label: 'Workflow', icon: Workflow, wired: false,
     kickoff: "Happy to help you build a workflow — I'll ask a few quick questions, then you can review everything before it saves.",
   },
   {
-    mode: 'sequence', label: 'Sequence', icon: GitBranch, wired: true,
+    mode: 'sequence', label: 'Sequence', icon: GitBranch, wired: false,
     kickoff: "Let's put a sequence together — I'll ask about the audience and the angle, then you review the actual copy before anything sends.",
   },
   {
-    mode: 'route', label: 'Route', icon: RouteIcon, wired: true,
+    mode: 'route', label: 'Route', icon: RouteIcon, wired: false,
     kickoff: "Let's build you a route — a couple quick questions about who you want to visit, then you can tweak it before heading out.",
   },
 ];
@@ -134,7 +138,6 @@ function firstNameFrom(displayName: string | null | undefined, email: string | n
 
 export default function ChatView() {
   const { profile, user } = useAuthContext();
-  const setActiveTab = useAppStore((s) => s.setActiveTab);
   const accounts = useAppStore((s) => s.accounts);
   const routeStops = useAppStore((s) => s.routeStops);
   const isRouteModeActive = useAppStore((s) => s.isRouteModeActive);
@@ -250,8 +253,7 @@ export default function ChatView() {
     try {
       await createWorkflow.mutateAsync({ draft, status: 'draft' });
       setMessages((m) => m.map((msg, i) => (i === msgIndex ? { ...msg, draftSaved: true } : msg)));
-      toast.success('Saved as a draft — opening it in Workflows.');
-      setActiveTab('workflows');
+      toast.success('Saved as a draft.');
     } catch (e) {
       toast.error(`Could not save: ${e instanceof Error ? e.message : 'unknown error'}`);
     }
@@ -261,8 +263,7 @@ export default function ChatView() {
     try {
       await createSequence.mutateAsync(draft);
       setMessages((m) => m.map((msg, i) => (i === msgIndex ? { ...msg, draftSaved: true } : msg)));
-      toast.success('Saved as a draft — opening it in Sequences.');
-      setActiveTab('sequences');
+      toast.success('Saved as a draft.');
     } catch (e) {
       toast.error(`Could not save: ${e instanceof Error ? e.message : 'unknown error'}`);
     }
@@ -281,8 +282,7 @@ export default function ChatView() {
       if (!isRouteModeActive) toggleRouteMode();
       loadRouteFromSnapshot(stops);
       setMessages((m) => m.map((msg, i) => (i === msgIndex ? { ...msg, draftSaved: true } : msg)));
-      toast.success(`Route built — ${stops.length} stop${stops.length === 1 ? '' : 's'}. Opening the map.`);
-      setActiveTab('map');
+      toast.success(`Route built — ${stops.length} stop${stops.length === 1 ? '' : 's'}.`);
     } finally {
       setSavingRoute(false);
     }
@@ -398,7 +398,7 @@ export default function ChatView() {
                   </div>
                   <WorkflowFlowBoxes draft={m.workflowDraft.draft} />
                   {m.draftSaved ? (
-                    <p className="text-xs text-status-active font-medium">Saved — open it in the Workflows tab.</p>
+                    <p className="text-xs text-status-active font-medium">Saved as a draft.</p>
                   ) : (
                     <button
                       onClick={() => saveWorkflowDraft(i, m.workflowDraft!.draft)}
@@ -419,7 +419,7 @@ export default function ChatView() {
                   </div>
                   <SequenceFlowBoxes steps={m.sequenceDraft.draft.steps} />
                   {m.draftSaved ? (
-                    <p className="text-xs text-status-active font-medium">Saved — open it in the Sequences tab.</p>
+                    <p className="text-xs text-status-active font-medium">Saved as a draft.</p>
                   ) : (
                     <button
                       onClick={() => saveSequenceDraft(i, m.sequenceDraft!.draft)}
@@ -440,7 +440,7 @@ export default function ChatView() {
                   </div>
                   <p className="text-xs text-muted-foreground">{m.routeDraft.accountIds.length} stop{m.routeDraft.accountIds.length === 1 ? '' : 's'}</p>
                   {m.draftSaved ? (
-                    <p className="text-xs text-status-active font-medium">Built — open the map to review or start navigation.</p>
+                    <p className="text-xs text-status-active font-medium">Route built.</p>
                   ) : (
                     <button
                       onClick={() => buildRoute(i, m.routeDraft!.accountIds)}
