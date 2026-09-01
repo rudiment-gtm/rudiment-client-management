@@ -50,9 +50,8 @@ export default function FilterSidebar() {
             {isSidebarOpen ? (
               <>
                 <div>
-                  {/* Text-only confirmed by Ani — no logo asset for Cyber Halo */}
-                  <p className="text-sm font-bold tracking-tight mb-1">Cyber Halo</p>
-                  <p className="text-xs text-sidebar-muted">Rudiment ops tracker</p>
+                  <p className="text-sm font-bold tracking-tight mb-1">Rudiment</p>
+                  <p className="text-xs text-sidebar-muted">Ops tracker</p>
                 </div>
                 <button
                   onClick={toggleSidebar}

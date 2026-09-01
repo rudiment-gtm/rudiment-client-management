@@ -132,10 +132,9 @@ export default function Auth() {
       <Card className="relative z-10 w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            {/* Text-only confirmed by Ani — no logo asset for Cyber Halo */}
-            <span className="text-2xl font-bold tracking-tight">Cyber Halo</span>
+            <span className="text-2xl font-bold tracking-tight">Rudiment</span>
           </div>
-          <CardDescription>Sales territory mapping and route planning.</CardDescription>
+          <CardDescription>Internal ops tracker for the Rudiment team.</CardDescription>
         </CardHeader>
         
         <CardContent>

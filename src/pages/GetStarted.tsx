@@ -153,9 +153,8 @@ export default function GetStarted() {
         </div>
 
         <div className="relative z-10 max-w-lg mx-auto px-4 pt-20 pb-12 text-center">
-          {/* Text-only confirmed by Ani — no logo asset for Cyber Halo */}
-          <span className="block text-2xl font-bold tracking-tight mx-auto mb-6">Cyber Halo</span>
-          <h1 className="text-3xl font-extrabold tracking-tight mb-3">Get started with Cyber Halo</h1>
+          <span className="block text-2xl font-bold tracking-tight mx-auto mb-6">Rudiment</span>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-3">Get started with Rudiment</h1>
           <p className="text-muted-foreground mb-8">
             14 days free, no credit card required. We'll create your account after you verify your email.
           </p>
@@ -233,7 +232,7 @@ export default function GetStarted() {
                 </Button>
               ) : (
                 <Button variant="outline" className="w-full" asChild>
-                  <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Cyber Halo ${plan.name} plan`)}`}>
+                  <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Rudiment ${plan.name} plan`)}`}>
                     {plan.cta}
                   </a>
                 </Button>
