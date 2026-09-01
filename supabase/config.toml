@@ -1,0 +1,39 @@
+project_id = "ryyfoaekvrvxobfzpvcr"
+
+[auth]
+site_url = "REPLACE_WITH_DEPLOYED_URL"
+
+[auth.email]
+enable_confirmations = true
+
+[auth.email.template.confirmation]
+subject = "Confirm your Encore account"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.invite]
+subject = "You're invited to Encore"
+content_path = "./supabase/templates/invite.html"
+
+# Called by the public /get-started signup form — no end-user session yet,
+# just an email address to invite.
+[functions.plg-signup]
+verify_jwt = false
+
+[functions.get-mapbox-token]
+verify_jwt = false
+
+# Called only by the accounts_activated_notify trigger (internal,
+# service-to-service) — no end-user session to verify a JWT against.
+[functions.notify-n8n-status-change]
+verify_jwt = false
+
+# Called only by the account_events_quote_created_notify trigger (internal,
+# service-to-service) — no end-user session to verify a JWT against.
+[functions.notify-n8n-quote-created]
+verify_jwt = false
+
+# Called only by the process-workflows pg_cron job (internal,
+# service-to-service) — no end-user session to verify a JWT against.
+[functions.process-workflows]
+verify_jwt = false
+

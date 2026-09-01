@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Encore — Design System
+   Single dark theme, matching getrudiment.com's own palette (no light mode,
+   same as the Rudiment marketing site itself).
+   All colors in HSL format */
+
+@layer base {
+  :root {
+    /* Core backgrounds — getrudiment.com background #050A09 */
+    --background: 165 40% 3%;
+    --foreground: 150 15% 95%;
+
+    /* Cards and surfaces — subtle lift off the background */
+    --card: 165 25% 6%;
+    --card-foreground: 150 15% 95%;
+
+    --popover: 165 25% 6%;
+    --popover-foreground: 150 15% 95%;
+
+    /* Primary — Rudiment's mint accent, #00F0B5 */
+    --primary: 165 100% 47%;
+    --primary-foreground: 165 40% 3%;
+
+    /* Secondary surfaces */
+    --secondary: 165 15% 14%;
+    --secondary-foreground: 150 15% 90%;
+
+    /* Muted — getrudiment.com's muted text, #7A8A85 */
+    --muted: 165 15% 12%;
+    --muted-foreground: 161 8% 55%;
+
+    /* Accent */
+    --accent: 165 60% 12%;
+    --accent-foreground: 165 100% 65%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI elements */
+    --border: 165 15% 16%;
+    --input: 165 15% 16%;
+    --ring: 165 100% 47%;
+
+    --radius: 0.625rem;
+
+    /* Sidebar — same dark theme, no separate lighter/darker variant needed */
+    --sidebar-background: 165 30% 4%;
+    --sidebar-foreground: 150 15% 90%;
+    --sidebar-primary: 165 100% 47%;
+    --sidebar-primary-foreground: 165 40% 3%;
+    --sidebar-accent: 165 20% 10%;
+    --sidebar-accent-foreground: 150 15% 95%;
+    --sidebar-border: 165 20% 12%;
+    --sidebar-ring: 165 100% 47%;
+    --sidebar-muted: 161 8% 55%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(165 40% 2% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(165 40% 2% / 0.4), 0 2px 4px -2px hsl(165 40% 2% / 0.4);
+    --shadow-lg: 0 10px 15px -3px hsl(165 40% 2% / 0.4), 0 4px 6px -4px hsl(165 40% 2% / 0.4);
+    --shadow-drawer: -8px 0 30px -12px hsl(165 40% 2% / 0.6);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Leaflet map container needs explicit height */
+  .leaflet-container {
+    height: 100%;
+    width: 100%;
+    background: hsl(var(--background));
+  }
+}
+
+@layer components {
+  /* Glass surface — backdrop blur + gradient sheen + mint hairline, matching
+     getrudiment.com's .glass-card. Needs real content/color behind it
+     (ambient background, map tiles) to actually read as "glass" — flat
+     solid backgrounds make the blur invisible. */
+  .glass-card {
+    position: relative;
+    border-radius: 1.125rem;
+    border: 1px solid hsl(var(--primary) / 0.14);
+    background: linear-gradient(
+      135deg,
+      hsl(0 0% 100% / 0.06) 0%,
+      hsl(0 0% 100% / 0.015) 55%,
+      hsl(var(--primary) / 0.03) 100%
+    );
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow:
+      0 8px 32px -8px hsl(165 40% 2% / 0.5),
+      inset 0 0 0 1px hsl(var(--primary) / 0.05),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.08);
+  }
+
+  /* Icon chip — 36px rounded-mint square with a mint ring, replacing bare
+     lucide icons in list rows. Matches the service-icon treatment on the
+     marketing site. */
+  .icon-chip {
+    @apply inline-flex items-center justify-center rounded-[11px] flex-shrink-0;
+    width: 36px;
+    height: 36px;
+    background: hsl(var(--primary) / 0.14);
+    border: 1px solid hsl(var(--primary) / 0.3);
+  }
+
+  .icon-chip svg {
+    stroke-width: 1.6;
+  }
+
+  .icon-chip-lg {
+    @apply inline-flex items-center justify-center rounded-full flex-shrink-0;
+    width: 48px;
+    height: 48px;
+    background: hsl(var(--primary) / 0.14);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 20px -4px hsl(var(--primary) / 0.35);
+  }
+
+  /* Mint pill + glow for hand-styled buttons that don't go through the
+     shared Button component (e.g. bulk-action buttons in tables). */
+  .btn-pill-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full font-semibold transition-all;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 20px -2px hsl(var(--primary) / 0.45), 0 0 0 1px hsl(var(--primary) / 0.3);
+  }
+  .btn-pill-primary:hover {
+    background: hsl(var(--primary) / 0.9);
+    box-shadow: 0 4px 24px -2px hsl(var(--primary) / 0.55), 0 0 0 1px hsl(var(--primary) / 0.4);
+  }
+  .btn-pill-primary:disabled {
+    opacity: 0.6;
+  }
+
+  /* Ambient background — quiet radial mint glow + drawing line-network
+     motif, lifted from getrudiment.com's hero. Used behind login card so
+     glass-card's blur has real content to blur against. */
+  .ambient-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 25% 15%, hsl(var(--primary) / 0.16) 0%, hsl(var(--primary) / 0.05) 32%, transparent 62%),
+      hsl(var(--background));
+  }
+  .ambient-bg > svg {
+    position: absolute;
+    width: 160%;
+    height: 160%;
+    left: -30%;
+    top: -30%;
+    opacity: 0.7;
+  }
+  .ambient-wavy-path {
+    stroke-dasharray: 4 3000;
+    animation: ambientWavyDraw 9s linear infinite;
+  }
+  @keyframes ambientWavyDraw {
+    to {
+      stroke-dashoffset: -3000;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient-wavy-path {
+      animation: none;
+    }
+  }
+
+  /* Status badges */
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* Matches statusConfig's colors in src/types/account.ts — lead/active/
+     canceled/new_customer are the only 4 real AccountStatus values. */
+  .status-badge-lead {
+    @apply bg-[rgba(79,195,247,0.15)] text-[#4FC3F7];
+  }
+
+  .status-badge-active {
+    @apply bg-[rgba(0,240,181,0.15)] text-[#00F0B5];
+  }
+
+  .status-badge-canceled {
+    @apply bg-[rgba(255,92,92,0.15)] text-[#FF5C5C];
+  }
+
+  .status-badge-new-customer {
+    @apply bg-[rgba(251,191,36,0.15)] text-[#FBBF24];
+  }
+
+  /* Sidebar filter toggles */
+  .filter-toggle {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer;
+    @apply hover:bg-sidebar-accent active:scale-[0.98];
+  }
+
+  .filter-toggle-active {
+    @apply bg-sidebar-accent;
+  }
+
+  /* Map pin markers */
+  .map-pin {
+    @apply w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white cursor-pointer transition-transform;
+    @apply hover:scale-110 active:scale-95;
+  }
+
+  /* Touch-friendly button */
+  .touch-button {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Drawer animations */
+  .drawer-enter {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .drawer-exit {
+    animation: slideOut 0.2s ease-in;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Route mode indicator */
+  .route-mode-active {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-sidebar-background;
+  }
+
+  /* Pulse animation for selected pins */
+  .pin-selected {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
+    }
+  }
+}
+
+@layer utilities {
+  /* Safe area padding for mobile */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Glass effect for overlays */
+  .glass {
+    @apply bg-background/80 backdrop-blur-lg;
+  }
+
+  .glass-dark {
+    @apply bg-sidebar-background/90 backdrop-blur-lg;
+  }
+}
