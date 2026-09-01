@@ -82,18 +82,25 @@ export default function Auth() {
     
     setIsLoading(true);
     
-    // Server-side domain validation for defense-in-depth
+    // Server-side domain validation for defense-in-depth — only blocks when
+    // the function actually ran and explicitly rejected the email. Any other
+    // failure (e.g. the function isn't deployed to this Supabase project
+    // yet) falls through to the client-side check that already passed above,
+    // instead of incorrectly treating "couldn't reach the check" the same
+    // as "check said no".
     try {
       const { data, error: fnError } = await supabase.functions.invoke('validate-email-domain', {
         body: { email: signupEmail }
       });
-      if (fnError || !data?.allowed) {
-        setError(data?.error || 'Email domain not authorized.');
+      if (!fnError && data && data.allowed === false) {
+        setError(data.error || 'Email domain not authorized.');
         setIsLoading(false);
         return;
       }
+      if (fnError || !data) {
+        console.warn('Server-side email validation unavailable, relying on client-side check');
+      }
     } catch {
-      // If server validation fails, fall through to client-side check (already passed above)
       console.warn('Server-side email validation unavailable, relying on client-side check');
     }
     
