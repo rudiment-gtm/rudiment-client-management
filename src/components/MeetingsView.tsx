@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { Plus, Trash2, Bold, Italic, List, ListOrdered, Heading1, Heading2 } from 'lucide-react';
+import { Plus, Trash2, Bold, Italic, List, ListOrdered } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Meeting, useMeetings, useCreateMeeting, useUpdateMeeting, useDeleteMeeting } from '@/hooks/useMeetings';
 
 const BODY_SAVE_DEBOUNCE_MS = 800;
+
+type SectionKey = 'performance_html' | 'active_week_html' | 'in_progress_html' | 'notes_html';
+
+const SECTIONS: { key: SectionKey; label: string; placeholder: string }[] = [
+  { key: 'performance_html', label: 'Performance', placeholder: 'How are things trending — opens, replies, meetings booked…' },
+  { key: 'active_week_html', label: 'Active this week', placeholder: "What's actively running right now…" },
+  { key: 'in_progress_html', label: 'In progress', placeholder: "What's being built but not live yet…" },
+  { key: 'notes_html', label: 'Notes', placeholder: 'Anything else worth writing down…' },
+];
 
 function ToolbarButton({ onClick, title, children }: { onClick: () => void; title: string; children: React.ReactNode }) {
   return (
@@ -31,33 +40,45 @@ function MeetingDocument({ meeting, onDeleted }: { meeting: Meeting; onDeleted: 
   const [title, setTitle] = useState(meeting.title);
   const [date, setDate] = useState(meeting.meeting_date);
   const [attendees, setAttendees] = useState(meeting.attendees ?? '');
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const sectionRefs = useRef<Record<SectionKey, HTMLDivElement | null>>({
+    performance_html: null,
+    active_week_html: null,
+    in_progress_html: null,
+    notes_html: null,
+  });
+  const focusedSection = useRef<SectionKey>('performance_html');
+  const saveTimers = useRef<Partial<Record<SectionKey, ReturnType<typeof setTimeout>>>>({});
 
   useEffect(() => {
-    if (bodyRef.current) bodyRef.current.innerHTML = meeting.content_html || '';
+    for (const { key } of SECTIONS) {
+      const el = sectionRefs.current[key];
+      if (el) el.innerHTML = meeting[key] || '';
+    }
+    const timers = saveTimers.current;
     return () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
+      Object.values(timers).forEach((t) => t && clearTimeout(t));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meeting.id]);
 
-  const commit = (patch: Partial<Pick<Meeting, 'title' | 'meeting_date' | 'attendees' | 'content_html'>>) =>
+  const commit = (patch: Partial<Pick<Meeting, 'title' | 'meeting_date' | 'attendees' | SectionKey>>) =>
     updateMeeting.mutate({ id: meeting.id, patch });
 
-  const saveBodyNow = () => {
-    if (bodyRef.current) commit({ content_html: bodyRef.current.innerHTML });
+  const saveSectionNow = (key: SectionKey) => {
+    const el = sectionRefs.current[key];
+    if (el) commit({ [key]: el.innerHTML } as Partial<Pick<Meeting, SectionKey>>);
   };
 
-  const scheduleBodySave = () => {
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(saveBodyNow, BODY_SAVE_DEBOUNCE_MS);
+  const scheduleSectionSave = (key: SectionKey) => {
+    if (saveTimers.current[key]) clearTimeout(saveTimers.current[key]);
+    saveTimers.current[key] = setTimeout(() => saveSectionNow(key), BODY_SAVE_DEBOUNCE_MS);
   };
 
   const exec = (command: string, value?: string) => {
-    bodyRef.current?.focus();
+    const el = sectionRefs.current[focusedSection.current];
+    el?.focus();
     document.execCommand(command, false, value);
-    scheduleBodySave();
+    scheduleSectionSave(focusedSection.current);
   };
 
   const handleDelete = () => {
@@ -112,29 +133,31 @@ function MeetingDocument({ meeting, onDeleted }: { meeting: Meeting; onDeleted: 
         <div className="w-px h-4 bg-border mx-1" />
         <ToolbarButton title="Bulleted list" onClick={() => exec('insertUnorderedList')}><List className="w-4 h-4" /></ToolbarButton>
         <ToolbarButton title="Numbered list" onClick={() => exec('insertOrderedList')}><ListOrdered className="w-4 h-4" /></ToolbarButton>
-        <div className="w-px h-4 bg-border mx-1" />
-        <ToolbarButton title="Heading 1" onClick={() => exec('formatBlock', '<h1>')}><Heading1 className="w-4 h-4" /></ToolbarButton>
-        <ToolbarButton title="Heading 2" onClick={() => exec('formatBlock', '<h2>')}><Heading2 className="w-4 h-4" /></ToolbarButton>
       </div>
 
       <div className="flex-1 overflow-auto bg-muted/30">
-        <div
-          ref={bodyRef}
-          contentEditable
-          suppressContentEditableWarning
-          onInput={scheduleBodySave}
-          onBlur={saveBodyNow}
-          data-placeholder="Start typing the agenda…"
-          className={cn(
-            'mx-auto my-8 max-w-3xl min-h-[65vh] rounded-md bg-background shadow-sm',
-            'px-14 py-12 font-serif text-[15px] leading-relaxed text-foreground',
-            'focus:outline-none',
-            '[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4 [&_h1]:font-sans',
-            '[&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3 [&_h2]:font-sans',
-            '[&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
-            'empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground',
-          )}
-        />
+        <div className="mx-auto my-8 max-w-3xl rounded-md bg-background shadow-sm px-14 py-12">
+          {SECTIONS.map(({ key, label, placeholder }, i) => (
+            <div key={key} className={cn(i > 0 && 'mt-8 pt-8 border-t')}>
+              <h2 className="text-lg font-bold font-sans mb-3">{label}</h2>
+              <div
+                ref={(el) => { sectionRefs.current[key] = el; }}
+                contentEditable
+                suppressContentEditableWarning
+                onFocus={() => { focusedSection.current = key; }}
+                onInput={() => scheduleSectionSave(key)}
+                onBlur={() => saveSectionNow(key)}
+                data-placeholder={placeholder}
+                className={cn(
+                  'min-h-[80px] font-serif text-[15px] leading-relaxed text-foreground',
+                  'focus:outline-none',
+                  '[&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
+                  'empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground',
+                )}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

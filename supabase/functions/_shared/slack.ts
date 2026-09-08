@@ -47,3 +47,13 @@ export async function getSlackTeamInfo(): Promise<{ team: string; team_id: strin
   const data = await slackFetch("auth.test");
   return { team: data.team, team_id: data.team_id };
 }
+
+// Deterministic channel choice for client-flagged requests (Rudi's "notify
+// the team" action) — picked in code rather than left to the model so a
+// client-facing chat never has to reason about, or expose, internal
+// channel names. Prefers a channel set up for this explicitly, then common
+// fallbacks, then just whatever's first.
+export function pickDefaultChannel(channels: SlackChannel[]): SlackChannel | null {
+  const byName = (name: string) => channels.find((c) => c.name === name);
+  return byName("client-requests") || byName("general") || channels[0] || null;
+}

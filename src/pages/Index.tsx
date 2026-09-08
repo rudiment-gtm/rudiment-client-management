@@ -5,7 +5,8 @@ import FilterSidebar from '@/components/FilterSidebar';
 import ChatView from '@/components/ChatView';
 import TasksView from '@/components/TasksView';
 import MeetingsView from '@/components/MeetingsView';
-import ProjectsView from '@/components/ProjectsView';
+import OnboardingView from '@/components/OnboardingView';
+import FilesView from '@/components/FilesView';
 import DashboardView from '@/components/DashboardView';
 import { cn } from '@/lib/utils';
 
@@ -45,10 +46,17 @@ const Index = () => {
           </div>
         )}
 
-        {/* Projects tab */}
-        {activeTab === 'projects' && (
+        {/* Onboarding tab */}
+        {activeTab === 'onboarding' && (
           <div className="h-full">
-            <ProjectsView />
+            <OnboardingView />
+          </div>
+        )}
+
+        {/* Files tab */}
+        {activeTab === 'files' && (
+          <div className="h-full">
+            <FilesView />
           </div>
         )}
 
