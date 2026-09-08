@@ -99,8 +99,8 @@ interface AppState {
   // UI state
   isSidebarOpen: boolean;
   isDrawerOpen: boolean;
-  activeTab: 'chat' | 'meetings' | 'projects' | 'tasks' | 'dashboard';
-  setActiveTab: (tab: 'chat' | 'meetings' | 'projects' | 'tasks' | 'dashboard') => void;
+  activeTab: 'chat' | 'onboarding' | 'files' | 'meetings' | 'tasks' | 'dashboard';
+  setActiveTab: (tab: 'chat' | 'onboarding' | 'files' | 'meetings' | 'tasks' | 'dashboard') => void;
 
   // A CSV import can be triggered from the Map view (not just the Prospect
   // tab) — this hands the resulting pool-company ids to the Prospect tab so

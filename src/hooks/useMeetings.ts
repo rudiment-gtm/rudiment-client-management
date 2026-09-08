@@ -15,6 +15,10 @@ export interface Meeting {
   meeting_date: string;
   attendees: string | null;
   content_html: string;
+  performance_html: string;
+  active_week_html: string;
+  in_progress_html: string;
+  notes_html: string;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -61,7 +65,7 @@ export function useCreateMeeting() {
 export function useUpdateMeeting() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<Meeting, 'title' | 'meeting_date' | 'attendees' | 'content_html'>> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<Meeting, 'title' | 'meeting_date' | 'attendees' | 'content_html' | 'performance_html' | 'active_week_html' | 'in_progress_html' | 'notes_html'>> }) => {
       const { error } = await db.from('meetings').update(patch).eq('id', id);
       if (error) throw error;
     },

@@ -40,6 +40,15 @@ export function emailBisonConfigured(): boolean {
   return !!Deno.env.get("EMAILBISON_API_KEY");
 }
 
+// Raw campaign list — shape isn't hard-coded here since it's relayed
+// verbatim to Rudi (supabase/functions/ai-chat) as grounding context rather
+// than parsed into a fixed TypeScript type, so the model can answer from
+// whatever fields the API actually returns without this needing to track
+// EmailBison's schema.
+export async function listCampaigns(): Promise<unknown> {
+  return await bisonFetch("/campaigns");
+}
+
 export interface SequenceStepInput {
   email_subject: string;
   email_body: string;

@@ -3,7 +3,8 @@ import {
   ChevronRight,
   Sparkles,
   CalendarDays,
-  FolderKanban,
+  FolderOpen,
+  ClipboardList,
   Settings as SettingsIcon,
   ListChecks,
   LayoutDashboard,
@@ -15,11 +16,12 @@ import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/components/AuthProvider';
 
 const NAV_ITEMS = [
-  { tab: 'chat', label: 'AI Agent Cue', icon: Sparkles },
-  { tab: 'meetings', label: 'Meetings', icon: CalendarDays },
-  { tab: 'projects', label: 'Projects', icon: FolderKanban },
-  { tab: 'tasks', label: 'Tasks', icon: ListChecks },
   { tab: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { tab: 'chat', label: 'Rudi', icon: Sparkles },
+  { tab: 'onboarding', label: 'Onboarding', icon: ClipboardList },
+  { tab: 'files', label: 'Files', icon: FolderOpen },
+  { tab: 'meetings', label: 'Meetings', icon: CalendarDays },
+  { tab: 'tasks', label: 'Tasks', icon: ListChecks },
 ] as const;
 
 export default function FilterSidebar() {
